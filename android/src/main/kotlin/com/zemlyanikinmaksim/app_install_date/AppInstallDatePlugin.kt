@@ -33,7 +33,16 @@ class AppInstallDatePlugin: FlutterPlugin, MethodCallHandler {
       } catch (e: PackageManager.NameNotFoundException) {
         result.error("Failed to load app install date", null, e)
       }
-    } else {
+    } 
+    else if (call.method == "getUpdateDate") {
+      try {
+        var packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0)
+        result.success(packageInfo.lastUpdateTime)
+      } catch (e: PackageManager.NameNotFoundException) {
+        result.error("Failed to load app install date", null, e)
+      }
+    }
+    else {
       result.notImplemented()
     }
   }

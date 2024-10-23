@@ -48,6 +48,21 @@ class AppInstallDate {
     }
   }
 
+  Future<DateTime> get updateDate async {
+    if (PlatformUtils.isAndroid) {
+      final updateDateInMilliseconds =
+          await _channel.invokeMethod<int>('getUpdateDate');
+      if (updateDateInMilliseconds != null) {
+        return DateTime.fromMillisecondsSinceEpoch(updateDateInMilliseconds);
+      } else {
+        throw FailedToGetInstallDateException(
+            'Update time from platform is null');
+      }
+    } else {
+      return _getUpdateDate();
+    }
+  }
+
   /// Returns application documents directory creation time
   ///
   /// This method is used in native iOS development to determine the install date of the application
@@ -57,6 +72,13 @@ class AppInstallDate {
         await getApplicationDocumentsDirectory();
     var stat = await FileStat.stat(applicationDocumentsDirectory.path);
     return stat.accessed;
+  }
+
+  Future<DateTime> _getUpdateDate() async {
+    var applicationDocumentsDirectory =
+        await getApplicationDocumentsDirectory();
+    var stat = await FileStat.stat(applicationDocumentsDirectory.path);
+    return stat.modified;
   }
 }
 
